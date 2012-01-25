@@ -5,6 +5,13 @@ include_directories(src/mesa)
 include_directories(src/mapi)
 include_directories(src/glsl)
 
+if(APPLE)
+  find_library(agl_framework AGL)
+  find_library(opengl_framework OpenGL)
+  mark_as_advanced(agl_framework opengl_framework)
+  set(extra_test_libs ${agl_framework} ${opengl_framework})
+endif(APPLE)
+
 option (DEBUG "Enable debugging" FALSE)
 
 if(${DEBUG} MATCHES "on")
@@ -35,7 +42,7 @@ target_link_libraries(glsl_compiler glsl_optimizer)
 
 file(GLOB glsl_test_sources tests/*.cpp)
 add_executable(glsl_test ${glsl_test_sources})
-target_link_libraries(glsl_test glsl_optimizer)
+target_link_libraries(glsl_test glsl_optimizer ${extra_test_libs})
 
 file(GLOB glslopt_sources contrib/glslopt/*.cpp)
 add_executable(glslopt ${glslopt_sources})
